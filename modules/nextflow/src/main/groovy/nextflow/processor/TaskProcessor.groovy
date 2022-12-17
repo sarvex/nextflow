@@ -133,6 +133,10 @@ class TaskProcessor {
         return value==null || value =='true'
     }
 
+    private static volatile TaskProcessor currentProcessor0
+
+    static TaskProcessor currentProcessor() { currentProcessor0 }
+
     /**
      * Keeps track of the task instance executed by the current thread
      */
@@ -263,6 +267,7 @@ class TaskProcessor {
     {
         id = ++processCount
         grengine = session && session.classLoader ? new Grengine(session.classLoader, compilerConfig()) : new Grengine(compilerConfig())
+        currentProcessor0 = this
     }
 
     /* for testing purpose - do not remove */
