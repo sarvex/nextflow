@@ -21,6 +21,7 @@
 
 
 
+
 import nextflow.config.ConfigParser
 import nextflow.exception.AbortRunException
 import nextflow.processor.TaskProcessor
@@ -733,12 +734,6 @@ class FunctionalTests extends Dsl2Spec {
     def 'should show the line of the error when throw an exception'() {
 
         given:
-        def config = '''
-            process {
-                executor = 'nope'
-            }
-            '''
-
         def script = '''/*1*/
 /*2*/   def thisMethodExpectsOnlyOneString(String a){
 /*3*/      a
@@ -748,17 +743,19 @@ class FunctionalTests extends Dsl2Spec {
 /*7*/       input:
 /*8*/           each x
 /*9*/       script:
-/*10*/          "${thisMethodExpectsOnlyOneString(1,2,3,4)}"
+/*10*/          "${thisMethodExpectsOnlyOneString(1)}"
 /*11*/      }
 /*12*/
-/*13*/   workflow { foo([1,2,3]) }
+/*13*/   workflow { foo(1) }
         '''
 
         when:
-        def runner = new MockScriptRunner(new ConfigParser().parse(config))
+        def config = [process:[executor: 'nope']]
+        def runner = new MockScriptRunner(config)
         runner.setScript(script).execute()
         then:
         def abort = thrown(AbortRunException)
+        and:
         runner.session.fault.report ==~ /(?s).*-- Check script '(.*?)' at line: 10.*/
     }
 }

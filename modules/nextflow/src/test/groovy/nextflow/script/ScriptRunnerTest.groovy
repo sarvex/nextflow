@@ -19,11 +19,11 @@ package nextflow.script
 
 import groovyx.gpars.dataflow.DataflowVariable
 import nextflow.config.ConfigParser
+import nextflow.exception.AbortRunException
 import nextflow.exception.ProcessUnrecoverableException
 import nextflow.processor.TaskProcessor
 import nextflow.util.Duration
 import nextflow.util.MemoryUnit
-import spock.lang.Ignore
 import spock.lang.Timeout
 import test.Dsl2Spec
 import test.MockScriptRunner
@@ -32,7 +32,7 @@ import test.MockSession
  *
  * @author Paolo Di Tommaso <paolo.ditommaso@gmail.com>
  */
-@Timeout(5)
+@Timeout(10)
 class ScriptRunnerTest extends Dsl2Spec {
 
     def 'test process' () {
@@ -226,17 +226,9 @@ class ScriptRunnerTest extends Dsl2Spec {
 
     }
 
-    @Ignore
     def 'test process missing variable' () {
 
         given:
-        def session = new MockSession( executor: 'nope' ) {
-            @Override
-            void abort(Throwable cause) {
-                forceTermination()
-            }
-        }
-
         def script = '''
             process test {
                 script:
@@ -247,15 +239,17 @@ class ScriptRunnerTest extends Dsl2Spec {
             '''
 
         when:
-        new MockScriptRunner(session)
-                .setScript(script)
-                .execute()
+        def config = [process:[executor: 'nope']]
+        def runner = new MockScriptRunner(config)
+        runner.setScript(script) .execute()
 
         then:
-        session.fault.error instanceof ProcessUnrecoverableException
-        session.fault.error.cause instanceof MissingPropertyException
-        session.fault.error.cause.message =~ /Unknown variable 'HELLO' -- .*/
-        session.fault.report =~ /No such variable: HELLO -- .*/
+        thrown(AbortRunException)
+        and:
+        runner.session.fault.error instanceof ProcessUnrecoverableException
+        runner.session.fault.error.cause instanceof MissingPropertyException
+        runner.session.fault.error.cause.message =~ /Unknown variable 'HELLO' -- .*/
+        runner.session.fault.report =~ /No such variable: HELLO -- .*/
 
     }
 

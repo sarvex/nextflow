@@ -258,6 +258,12 @@ class TaskProcessor {
         return config
     }
 
+    static void reset() {
+        processCount=0
+        errorShown.set(false)
+        currentProcessor0 = null
+    }
+
     /*
      * Initialise the process ID
      *
@@ -953,6 +959,7 @@ class TaskProcessor {
     final protected boolean handleException( Throwable error, TaskRun task = null ) {
         log.trace "Handling error: $error -- task: $task"
         def fault = resumeOrDie(task, error)
+        log.trace "Task fault (2): $fault"
 
         if (fault instanceof TaskFault) {
             session.fault(fault)
@@ -973,7 +980,7 @@ class TaskProcessor {
      */
     @PackageScope
     final synchronized resumeOrDie( TaskRun task, Throwable error ) {
-        log.debug "Handling unexpected condition for\n  task: name=${safeTaskName(task)}; work-dir=${task.workDirStr}\n  error [${error?.class?.name}]: ${error?.getMessage()?:error}"
+        log.debug "Handling unexpected condition for\n  task: name=${safeTaskName(task)}; work-dir=${task?.workDirStr}\n  error [${error?.class?.name}]: ${error?.printStackTrace(System.out)}"
 
         ErrorStrategy errorStrategy = TERMINATE
         final message = []
@@ -1035,6 +1042,7 @@ class TaskProcessor {
 
             // -- make sure the error is showed only the very first time across all processes
             if( errorShown.getAndSet(true) || session.aborted ) {
+                log.debug "Process errorShown=${errorShown.get()}; aborted=${session.aborted}"
                 return errorStrategy
             }
 
@@ -2216,6 +2224,7 @@ class TaskProcessor {
         }
         catch ( Throwable error ) {
             fault = resumeOrDie(task, error)
+            log.trace "Task fault (3): $fault"
         }
 
         // -- finalize the task

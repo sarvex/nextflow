@@ -49,6 +49,11 @@ class ScriptMeta {
 
     static private Set<String> resolvedProcessNames = new HashSet<>(20)
 
+    static void reset() {
+        REGISTRY.clear()
+        resolvedProcessNames.clear()
+    }
+
     static ScriptMeta get(BaseScript script) {
         if( !script ) throw new IllegalStateException("Missing current script context")
         return REGISTRY.get(script)

@@ -283,4 +283,9 @@ class Global {
         }
     }
 
+    static void reset() {
+        session = null
+        config = null
+        hooks.clear()
+    }
 }
