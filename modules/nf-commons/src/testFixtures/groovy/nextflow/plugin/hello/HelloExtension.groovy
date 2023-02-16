@@ -120,11 +120,7 @@ class HelloExtension extends PluginExtensionPoint {
 
     protected DataflowWriteChannel createReverseChannel(final String message){
         final channel = CH.create()
-        if( NF.isDsl2() ){
-            session.addIgniter { ->
-                businessLogicHere(channel, message)
-            }
-        }else{
+        session.addIgniter { ->
             businessLogicHere(channel, message)
         }
         channel

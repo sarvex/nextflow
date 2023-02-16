@@ -992,13 +992,12 @@ class OperatorImpl {
         return target
     }
 
-
     /**
      * Implements a tap that create implicitly a new dataflow variable in the global script context.
      * For example:
      *
      * <pre>
-     *     Channel.from(...)
+     *     Channel.of(...)
      *            .tap { newChannelName }
      *            .map { ... }
      *  </pre>

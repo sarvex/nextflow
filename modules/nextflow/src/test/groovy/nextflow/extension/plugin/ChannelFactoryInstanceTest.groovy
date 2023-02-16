@@ -155,9 +155,6 @@ class ChannelFactoryInstanceTest extends Specification {
                 .loadPluginExtensionMethods("nf-foo",ext2, ['omega':'omega'])
         and:
         def SCRIPT = '''
-            def ch1 = channel.alpha([1,2,3])
-            def ch2 = channel.omega(['X','Y','Z'])
-            
             process sayHello {
               input:
                 val x

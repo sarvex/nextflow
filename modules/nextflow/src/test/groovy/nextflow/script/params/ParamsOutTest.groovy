@@ -648,7 +648,6 @@ class ParamsOutTest extends Dsl2Spec {
 
     }
 
-
     def 'should fetch output value' () {
 
         given:

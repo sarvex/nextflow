@@ -84,7 +84,7 @@ class ScriptRunnerTest extends Dsl2Spec {
             '''
             process simpleTask  {
                 input:
-                val x 
+                val x
                 output:
                 stdout 
 
@@ -143,13 +143,13 @@ class ScriptRunnerTest extends Dsl2Spec {
             '''
             process simpleTask  {
                 input:
-                val x 
+                val x
                 output:
                 stdout
 
                 "echo $x"
             }
-            
+
             workflow {
               main: simpleTask(1)
               emit: simpleTask.out

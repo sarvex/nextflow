@@ -125,7 +125,7 @@ class BodyDefTest extends Dsl2Spec {
                     """
                 }
 
-                workflow { 
+                workflow {
                     simpleTask('hola')
                 }
                 '''

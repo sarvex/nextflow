@@ -55,7 +55,6 @@ import nextflow.Session
 import nextflow.ast.NextflowDSLImpl
 import nextflow.ast.TaskCmdXform
 import nextflow.ast.TaskTemplateVarsXform
-import nextflow.cloud.CloudSpotTerminationException
 import nextflow.dag.NodeMarker
 import nextflow.exception.FailedGuardException
 import nextflow.exception.MissingFileException
@@ -550,10 +549,6 @@ class TaskProcessor {
     }
 
     private start(DataflowProcessor op) {
-        if( !NF.dsl2 ) {
-            op.start()
-            return
-        }
         session.addIgniter {
             log.debug "Starting process > $name"
             op.start()
@@ -991,8 +986,8 @@ class TaskProcessor {
             if( error instanceof Error ) throw error
 
             // -- retry without increasing the error counts
-            if( task && (error.cause instanceof ProcessRetryableException || error.cause instanceof CloudSpotTerminationException) ) {
-                if( error.cause instanceof ProcessRetryableException )
+            if( task && (error.cause instanceof NodeTerminationException) ) {
+                if( error.cause instanceof NodeTerminationException )
                     log.info "[$task.hashLog] NOTE: ${error.message} -- Execution is retried"
                 else
                     log.info "[$task.hashLog] NOTE: ${error.message} -- Cause: ${error.cause.message} -- Execution is retried"
