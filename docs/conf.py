@@ -46,7 +46,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Nextflow'
-copyright = str(datetime.date.today().year) + u', Seqera Labs, S.L'
+copyright = f'{str(datetime.date.today().year)}, Seqera Labs, S.L'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
